@@ -1,5 +1,5 @@
 from ecommerce import app
-from flask import render_template
+from flask import render_template, request
 from ecommerce.controllers.customer_controller import CustomerController
 from ecommerce.controllers.category_controller import CategoryController
 
@@ -19,9 +19,19 @@ def contact():
     return render_template('customer/contact.html', title='Contact Us')
 
 
-@app.route('/login')
+@app.route('/login', methods = ["POST"])
 def login():
-    return render_template('customer/auth/login.html', title='Login')
+    User = request.form['Username']
+    Pass = request.form['Password']
+
+    client = pymongo.MongoClient("mongodb+srv://onlinegrocery2021iNeuron:onlinegrocery2021iNeuron@cluster0.xi9at.mongodb.net/OnlineGroceryDB?retryWrites=true&w=majority")
+    db = client['OnlineGroceryDB']
+    collection = db.User_details
+    for record in collection.find({'User_id':User, 'password':Pass}):
+        if len(record)==1:
+            return render_template("home.html")
+        else:
+            return render_template("register.html")
 
 
 @app.route('/register')
